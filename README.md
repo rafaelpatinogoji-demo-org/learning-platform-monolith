@@ -149,169 +149,333 @@ The application follows a clean Route-Controller pattern that separates routing 
 #### Directory Structure
 ```
 src/
-├── controllers/          # Business logic handlers
-│   ├── auth.controller.ts
-│   ├── users.controller.ts
-│   ├── courses.controller.ts
-│   ├── lessons.controller.ts
-│   ├── enrollments.controller.ts
-│   ├── progress.controller.ts
-│   ├── quizzes.controller.ts
-│   └── certificates.controller.ts
-├── routes/               # HTTP route definitions
-│   ├── index.ts         # Main router that mounts all subrouters
-│   ├── auth.routes.ts
-│   ├── users.routes.ts
-│   ├── courses.routes.ts
-│   ├── lessons.routes.ts
-│   ├── enrollments.routes.ts
-│   ├── progress.routes.ts
-│   ├── quizzes.routes.ts
-│   └── certificates.routes.ts
-├── middleware/          # Common middleware
-│   ├── requestId.middleware.ts
-│   ├── logging.middleware.ts
-│   └── errorHandler.middleware.ts
-└── ...
+├── routes/          # Express route definitions
+├── controllers/     # Request/response handling
+├── services/        # Business logic layer
+├── middleware/      # Express middleware
+├── utils/           # Utility functions
+├── config/          # Configuration management
+└── db/              # Database connection
 ```
 
-#### Pattern Benefits
-- **Separation of Concerns**: Routes handle HTTP specifics, controllers handle business logic
-- **Testability**: Controllers can be unit tested independently of Express
-- **Consistency**: Uniform structure across all domain modules
-- **Maintainability**: Clear organization makes the codebase easy to navigate
+#### Request Flow
 
-#### Controller Structure
-Each controller exports an object with standard CRUD operations:
-- `index` - GET / (list resources)
-- `create` - POST / (create resource)
-- `show` - GET /:id (get specific resource)
-- `update` - PUT /:id (update resource)
-- `remove` - DELETE /:id (delete resource)
+1. **Route** - Express routes define URL patterns and HTTP methods
+2. **Middleware** - Authentication, validation, logging
+3. **Controller** - Handles HTTP requests/responses, delegates to services
+4. **Service** - Contains business logic, interacts with database
+5. **Response** - Consistent JSON responses with proper status codes
 
-### Middleware Stack
+### Authentication & Authorization (v0.5)
 
-The application uses several middleware layers applied globally:
+The platform implements JWT-based authentication with role-based access control (RBAC):
 
-1. **Request ID**: Adds unique identifier to each request (`X-Request-ID` header)
-2. **Logging**: One-line per request logging with timing
-3. **CORS**: Cross-origin resource sharing enabled
-4. **JSON Parsing**: Automatic JSON body parsing
-5. **Error Handling**: Consistent JSON error responses
-6. **404 Handler**: Clean JSON responses for unknown routes
+#### Authentication Flow
 
-## API Endpoints
+1. **Login** - POST `/api/auth/login` with email/password
+2. **JWT Token** - Server returns signed JWT with user info and role
+3. **Protected Routes** - Include `Authorization: Bearer <token>` header
+4. **Token Validation** - Middleware verifies signature and expiration
 
-### Core Endpoints
-- **GET /** - Returns app information, version, and available modules
-- **GET /healthz** - Health check endpoint that returns "ok"
-- **GET /readiness** - Database connectivity check with schema verification
+#### User Roles
 
-### Domain API Routes (v0.5)
-All domain routes are mounted under `/api` and follow RESTful conventions:
+- **admin** - Full system access, can manage all resources
+- **instructor** - Can create and manage own courses, view enrollments
+- **student** - Can enroll in courses, submit quizzes, track progress
 
-#### Authentication (`/api/auth`)
-- `GET /api/auth` - Authentication index
-- `POST /api/auth` - Create authentication
-- `GET /api/auth/:id` - Get authentication details
-- `PUT /api/auth/:id` - Update authentication
-- `DELETE /api/auth/:id` - Remove authentication
+#### Middleware
 
-#### Users (`/api/users`)
-- `GET /api/users` - List users
-- `POST /api/users` - Create user
-- `GET /api/users/:id` - Get user details
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user
+- `authenticate` - Validates JWT token, attaches user to request
+- `requireRole(roles)` - Ensures user has required role(s)
+- `authenticateOptional` - Allows both authenticated and public access
 
-#### Courses (`/api/courses`)
-- `GET /api/courses` - List courses
-- `POST /api/courses` - Create course
-- `GET /api/courses/:id` - Get course details
-- `PUT /api/courses/:id` - Update course
-- `DELETE /api/courses/:id` - Delete course
+#### Security Features
 
-#### Lessons (`/api/lessons`)
-- `GET /api/lessons` - List lessons
-- `POST /api/lessons` - Create lesson
-- `GET /api/lessons/:id` - Get lesson details
-- `PUT /api/lessons/:id` - Update lesson
-- `DELETE /api/lessons/:id` - Delete lesson
+- Bcrypt password hashing with configurable cost factor
+- JWT tokens with configurable expiration (24h default)
+- Role-based route protection
+- Request ID tracking for audit logs
+- Secure error messages (no data leakage)
 
-#### Enrollments (`/api/enrollments`)
-- `GET /api/enrollments` - List enrollments
-- `POST /api/enrollments` - Create enrollment
-- `GET /api/enrollments/:id` - Get enrollment details
-- `PUT /api/enrollments/:id` - Update enrollment
-- `DELETE /api/enrollments/:id` - Delete enrollment
+### API Design (v1.3)
 
-#### Progress (`/api/progress`)
-- `GET /api/progress` - List progress records
-- `POST /api/progress` - Create progress record
-- `GET /api/progress/:id` - Get progress details
-- `PUT /api/progress/:id` - Update progress
-- `DELETE /api/progress/:id` - Delete progress
+#### Response Format
 
-#### Quizzes (`/api/quizzes`)
-- `GET /api/quizzes` - List quizzes
-- `POST /api/quizzes` - Create quiz
-- `GET /api/quizzes/:id` - Get quiz details
-- `PUT /api/quizzes/:id` - Update quiz
-- `DELETE /api/quizzes/:id` - Delete quiz
+All API responses follow a consistent structure:
 
-#### Certificates (`/api/certificates`)
-- `GET /api/certificates` - List certificates
-- `POST /api/certificates` - Create certificate
-- `GET /api/certificates/:id` - Get certificate details
-- `PUT /api/certificates/:id` - Update certificate
-- `DELETE /api/certificates/:id` - Delete certificate
+```json
+{
+  "ok": true,
+  "data": { /* response payload */ },
+  "version": "v1.3",
+  "timestamp": "2025-01-20T10:30:00.000Z",
+  "requestId": "req_abc123"
+}
+```
 
-### Error Responses
-All errors return consistent JSON format:
+Error responses:
+
 ```json
 {
   "ok": false,
   "error": {
-    "code": "ERROR_CODE",
-    "message": "Human readable message",
-    "requestId": "uuid-v4",
-    "timestamp": "2024-01-01T00:00:00.000Z"
+    "message": "Validation failed",
+    "code": "VALIDATION_ERROR",
+    "details": { /* field-specific errors */ }
+  },
+  "version": "v1.3",
+  "timestamp": "2025-01-20T10:30:00.000Z",
+  "requestId": "req_abc123"
+}
+```
+
+#### HTTP Status Codes
+
+- **200** - Success (GET, PUT operations)
+- **201** - Created (POST operations)
+- **400** - Bad Request (validation errors)
+- **401** - Unauthorized (authentication required)
+- **403** - Forbidden (insufficient permissions)
+- **404** - Not Found (resource doesn't exist)
+- **409** - Conflict (duplicate resource)
+- **500** - Internal Server Error (logged for debugging)
+
+#### Pagination
+
+List endpoints support pagination with consistent parameters:
+
+```
+GET /api/courses?page=1&limit=10&search=javascript
+```
+
+Response includes pagination metadata:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "courses": [...],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 25,
+      "pages": 3
+    }
   }
 }
 ```
 
-## Authentication & RBAC (v0.6)
+## Modules
 
-### Overview
+### Authentication (v0.5)
 
-The application implements JWT-based authentication with role-based access control (RBAC). Users can have one of three roles: `admin`, `instructor`, or `student`.
+Complete JWT-based authentication system with role-based access control.
 
-### Password Security
+#### Endpoints
 
-- **Hashing Algorithm**: bcrypt with 12 rounds
-- **Justification**: Industry standard with built-in salt generation, adaptive cost factor for future-proofing, and excellent security-performance balance
-- **Storage**: Only hashed passwords are stored; plain text passwords are never persisted
+- `POST /api/auth/login` - User login with email/password
+- `POST /api/auth/logout` - Logout (client-side token removal)
+- `GET /api/auth/me` - Get current user profile
+- `POST /api/auth/register` - User registration (students only)
 
-### JWT Configuration
+#### Features
 
-- **Algorithm**: HS256 (HMAC with SHA-256)
-- **Expiration**: 24 hours
-- **Payload**: Includes `sub` (user ID), `email`, `role`, `iat`, and `exp`
-- **Secret**: Configured via `JWT_SECRET` environment variable
+- Secure password hashing with bcrypt
+- JWT tokens with configurable expiration
+- Role-based access control (admin, instructor, student)
+- Input validation and sanitization
+- Comprehensive error handling
 
-### Environment Variables
+### Users (v0.6)
 
-Add these to your `.env` file:
+User management with role-based operations and profile management.
 
-```bash
-# Required in production, optional in development
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
+#### Endpoints
 
-# Database connection (already configured)
-DATABASE_URL=postgresql://learnlite:learnlite_dev_password@localhost:5432/learnlite
-```
+- `GET /api/users` - List users (admin only)
+- `POST /api/users` - Create user (admin only)
+- `GET /api/users/:id` - Get user profile
+- `PUT /api/users/:id` - Update user profile
+- `DELETE /api/users/:id` - Delete user (admin only)
 
-### Authentication Endpoints
+#### Features
+
+- Role-based user creation and management
+- Profile updates with ownership verification
+- Email uniqueness enforcement
+- Secure password updates
+- Admin-only user deletion
+
+### Courses (v0.7)
+
+Complete course management with publishing workflow and role-based access.
+
+#### Endpoints
+
+- `GET /api/courses` - List courses with search and pagination
+- `POST /api/courses` - Create course (instructor/admin)
+- `GET /api/courses/:id` - Get course details
+- `PUT /api/courses/:id` - Update course (owner/admin)
+- `DELETE /api/courses/:id` - Delete course (admin only)
+- `POST /api/courses/:id/publish` - Publish course
+- `POST /api/courses/:id/unpublish` - Unpublish course
+
+#### Features
+
+- Role-based course creation and management
+- Publishing workflow for course lifecycle
+- Search functionality across title and description
+- Pagination with configurable limits
+- Price normalization (dollars to cents)
+- Ownership-based authorization
+
+### Lessons (v0.8)
+
+Lesson management with automatic positioning and atomic reordering.
+
+#### Endpoints
+
+- `POST /api/courses/:courseId/lessons` - Create lesson
+- `GET /api/courses/:courseId/lessons` - List course lessons
+- `PATCH /api/courses/:courseId/lessons/reorder` - Reorder lessons
+- `GET /api/lessons/:id` - Get lesson details
+- `PUT /api/lessons/:id` - Update lesson
+- `DELETE /api/lessons/:id` - Delete lesson
+
+#### Features
+
+- Automatic position management (dense 1..N sequence)
+- Atomic reordering with validation
+- Markdown content support
+- Video URL validation
+- Role-based access control
+- Visibility rules based on course publishing status
+
+### Enrollments (v0.9)
+
+Student enrollment management with status tracking and duplicate prevention.
+
+#### Endpoints
+
+- `POST /api/enrollments` - Enroll in course (students)
+- `GET /api/enrollments/me` - Get user's enrollments
+- `PUT /api/enrollments/:id/status` - Update enrollment status (admin)
+- `GET /api/courses/:courseId/enrollments` - List course enrollments (instructor/admin)
+
+#### Features
+
+- One enrollment per (user, course) pair
+- Published course requirement for enrollment
+- Status management (active, completed, refunded)
+- Role-based access to enrollment data
+- Instructor can view own course enrollments
+
+### Quizzes (v1.0)
+
+Comprehensive quiz system with multiple-choice questions and automatic scoring.
+
+#### Endpoints
+
+- `POST /api/courses/:courseId/quizzes` - Create quiz
+- `GET /api/courses/:courseId/quizzes` - List course quizzes
+- `GET /api/quizzes/:id` - Get quiz with questions
+- `POST /api/quizzes/:id/submit` - Submit quiz answers
+- `GET /api/quizzes/:id/submissions/me` - Get latest submission
+- `GET /api/quizzes/:id/submissions` - List all submissions (instructor/admin)
+- `POST /api/quizzes/:quizId/questions` - Create question
+- `PUT /api/quizzes/:quizId/questions/:questionId` - Update question
+- `DELETE /api/quizzes/:quizId/questions/:questionId` - Delete question
+
+#### Features
+
+- Multiple-choice questions with configurable choices
+- Automatic scoring with immediate feedback
+- Multiple attempts support (all stored)
+- Role-based question management
+- Student enrollment verification for submissions
+- Correct answers hidden from student responses
+
+### Progress (v1.1)
+
+Progress tracking system for lesson completion and course progress calculation.
+
+#### Endpoints
+
+- `POST /api/progress/complete` - Mark lesson complete/incomplete
+- `GET /api/progress/me?courseId=...` - Get user's course progress
+- `GET /api/courses/:courseId/progress` - Get course progress aggregate (instructor/admin)
+
+#### Features
+
+- Lesson-level completion tracking
+- Automatic progress percentage calculation
+- Idempotent operations (safe to retry)
+- Role-based progress viewing
+- Integration with enrollments system
+- Support for course completion certificates
+
+### Certificates (v1.2)
+
+Certificate generation system for course completion with unique verification codes.
+
+#### Endpoints
+
+- `POST /api/certificates/generate` - Generate certificate for completed course
+- `GET /api/certificates/me` - Get user's certificates
+- `GET /api/certificates/:code/verify` - Verify certificate by code (public)
+- `GET /api/certificates/course/:courseId` - List course certificates (instructor/admin)
+
+#### Features
+
+- Automatic certificate generation for 100% course completion
+- Unique verification codes for authenticity
+- Public certificate verification
+- Role-based certificate management
+- Integration with progress tracking system
+- Duplicate prevention (one certificate per user per course)
+
+### Notifications (v1.3)
+
+Event-driven notifications system using outbox pattern for reliable delivery.
+
+#### Endpoints
+
+- `GET /api/notifications/health` - Worker status and metrics
+
+#### Features
+
+- Outbox pattern for reliable event processing
+- Background worker with configurable polling
+- Console and file sink support
+- Event hooks for enrollment and certificate generation
+- Batch processing with transactional consistency
+- Health monitoring and metrics
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Docker and Docker Compose
+- PostgreSQL (via Docker)
+
+### Setup
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Copy environment file: `cp .env.example .env`
+4. Start database: `docker compose up -d`
+5. Run migrations: `npm run migrate:up`
+6. Start development server: `npm run dev`
+
+### Available Scripts
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build TypeScript to JavaScript
+- `npm run start` - Start production server (requires build first)
+- `npm run clean` - Remove build artifacts/learnlite
+
+## Authentication Endpoints
 
 #### Register User
 ```bash
@@ -1880,3 +2044,7 @@ CREATE INDEX ON certificates(course_id);
 - `npm run build` - Build TypeScript to JavaScript
 - `npm run start` - Start production server (requires build first)
 - `npm run clean` - Remove build artifacts
+=======
+# learning-platform-monolith
+Learning Platform NODEJS Back-End
+>>>>>>> 867da0c9184479569b0794dc182c5c6064082810
