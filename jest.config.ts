@@ -29,11 +29,12 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   
-  // Only collect coverage from auth-related files
   collectCoverageFrom: [
     'src/middleware/auth.middleware.ts',
     'src/utils/jwt-utils.ts',
-    'src/utils/password-hasher.ts'
+    'src/utils/password-hasher.ts',
+    'src/services/enrollments.service.ts',
+    'src/controllers/enrollments.controller.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
@@ -60,6 +61,18 @@ const config: Config = {
     },
     // Password hasher should have high coverage
     'src/utils/password-hasher.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    'src/services/enrollments.service.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    'src/controllers/enrollments.controller.ts': {
       branches: 90,
       functions: 90,
       lines: 90,
