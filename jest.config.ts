@@ -29,11 +29,13 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   
-  // Only collect coverage from auth-related files
   collectCoverageFrom: [
     'src/middleware/auth.middleware.ts',
     'src/utils/jwt-utils.ts',
-    'src/utils/password-hasher.ts'
+    'src/utils/password-hasher.ts',
+    'src/modules/notifications/publisher.ts',
+    'src/modules/notifications/worker.ts',
+    'src/controllers/notifications.controller.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
@@ -60,6 +62,27 @@ const config: Config = {
     },
     // Password hasher should have high coverage
     'src/utils/password-hasher.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    // Notifications publisher should have high coverage
+    'src/modules/notifications/publisher.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    // Notifications worker should have high coverage
+    'src/modules/notifications/worker.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    // Notifications controller should have high coverage
+    'src/controllers/notifications.controller.ts': {
       branches: 90,
       functions: 90,
       lines: 90,
