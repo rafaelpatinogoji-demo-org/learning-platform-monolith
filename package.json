@@ -15,7 +15,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:auth": "jest test/auth"
+    "test:auth": "jest test/auth",
+    "seed": "ts-node scripts/seed.ts",
+    "seed:dev": "NODE_ENV=development ts-node scripts/seed.ts"
   },
   "keywords": [
     "learning",

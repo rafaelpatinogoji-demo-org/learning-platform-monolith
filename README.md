@@ -473,7 +473,87 @@ Event-driven notifications system using outbox pattern for reliable delivery.
 - `npm run dev` - Start development server with hot reload
 - `npm run build` - Build TypeScript to JavaScript
 - `npm run start` - Start production server (requires build first)
-- `npm run clean` - Remove build artifacts/learnlite
+- `npm run clean` - Remove build artifacts
+- `npm run seed` - Populate database with sample data
+- `npm run seed:dev` - Seed database in development mode
+
+## Seed Script with Sample Data
+
+The LearnLite platform includes a comprehensive seed script that populates your database with realistic sample data for development and testing purposes.
+
+### What's Included
+
+The seed script creates:
+
+- **6 Users** across all roles:
+  - 1 Admin user
+  - 2 Instructor users  
+  - 3 Student users
+- **3 Courses** with different statuses:
+  - Complete Web Development Bootcamp (Published)
+  - Advanced JavaScript Concepts (Published)
+  - React for Beginners (Draft)
+- **5 Lessons** with rich markdown content and video URLs
+- **2 Quizzes** with multiple-choice questions
+- **4 Enrollments** showing various student-course relationships
+- **3 Progress Records** demonstrating lesson completion tracking
+- **1 Sample Certificate** for completed courses
+
+### Running the Seed Script
+
+```bash
+# Basic seeding
+npm run seed
+
+# Development mode seeding
+npm run seed:dev
+```
+
+### Test Credentials
+
+After running the seed script, you can log in with these accounts:
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@learnlite.com | admin123 |
+| Instructor | john.instructor@learnlite.com | instructor123 |
+| Instructor | sarah.instructor@learnlite.com | instructor123 |
+| Student | alice.student@learnlite.com | student123 |
+| Student | bob.student@learnlite.com | student123 |
+| Student | carol.student@learnlite.com | student123 |
+
+### Sample Data Features
+
+- **Realistic Content**: Lessons include comprehensive markdown content covering web development topics
+- **Progress Tracking**: Some students have partially completed courses with timestamped progress
+- **Quiz Interactions**: Pre-built quizzes with multiple-choice questions and correct answers
+- **Role-Based Data**: Different users have appropriate permissions and course access
+- **Certificate Generation**: Sample certificate for completed course enrollment
+
+### Complete Database Reset
+
+⚠️ **WARNING**: The seed script completely clears the entire database before seeding:
+- **Deletes ALL existing data** from all tables (users, courses, lessons, etc.)
+- **Resets all ID sequences** to start from 1
+- **Does NOT preserve** any existing data - everything is wiped clean
+- Provides detailed console output showing the clearing and seeding process
+
+This ensures a completely fresh start with predictable IDs and clean test data.
+
+### Development Workflow
+
+1. Set up your database and run migrations
+2. Run the seed script to populate with sample data
+3. Start developing and testing with realistic data
+4. Re-run the seed script anytime you need fresh data
+
+```bash
+# Complete setup workflow
+docker compose up -d
+npm run migrate:up
+npm run seed
+npm run dev
+```
 
 ## Authentication Endpoints
 
