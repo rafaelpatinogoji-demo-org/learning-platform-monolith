@@ -29,14 +29,16 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   
-  // Only collect coverage from auth-related files
   collectCoverageFrom: [
     'src/middleware/auth.middleware.ts',
     'src/utils/jwt-utils.ts',
-    'src/utils/password-hasher.ts'
+    'src/utils/password-hasher.ts',
+    'src/services/certificates.service.ts',
+    'src/controllers/certificates.controller.ts',
+    'src/utils/validation.ts'
   ],
   
-  // Coverage thresholds - focused on auth components only
+  // Coverage thresholds for auth and certificates modules
   coverageThreshold: {
     global: {
       branches: 80,
@@ -64,6 +66,27 @@ const config: Config = {
       functions: 90,
       lines: 90,
       statements: 90
+    },
+    // Certificates service should have high coverage
+    'src/services/certificates.service.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    // Certificates controller should have high coverage
+    'src/controllers/certificates.controller.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    // Validation utilities should have high coverage
+    'src/utils/validation.ts': {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85
     }
   },
   

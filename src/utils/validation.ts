@@ -624,7 +624,7 @@ export class CertificateValidator {
     const errors: ValidationError[] = [];
 
     // Validate userId
-    if (!data.userId) {
+    if (data.userId === null || data.userId === undefined) {
       errors.push({
         field: 'userId',
         message: 'User ID is required'
@@ -637,7 +637,7 @@ export class CertificateValidator {
     }
 
     // Validate courseId
-    if (!data.courseId) {
+    if (data.courseId === null || data.courseId === undefined) {
       errors.push({
         field: 'courseId',
         message: 'Course ID is required'
@@ -662,7 +662,7 @@ export class CertificateValidator {
     const errors: ValidationError[] = [];
 
     // Validate courseId
-    if (!data.courseId) {
+    if (data.courseId === null || data.courseId === undefined) {
       errors.push({
         field: 'courseId',
         message: 'Course ID is required'
