@@ -14,6 +14,8 @@ export interface AppConfig {
   // Database (future)
   databaseUrl: string;
   
+  mongodbAuthUrl: string;
+  
   // Logging
   logLevel: 'error' | 'warn' | 'info' | 'debug';
   
@@ -108,6 +110,7 @@ function loadConfig(): AppConfig {
       nodeEnv,
       jwtSecret,
       databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/learnlite_dev',
+      mongodbAuthUrl: process.env.MONGODB_AUTH_URL || 'mongodb://localhost:27017/learnlite_auth',
       logLevel: validateLogLevel(process.env.LOG_LEVEL),
       appName: process.env.APP_NAME || 'learnlite',
       version: 'v1.2',
@@ -135,6 +138,7 @@ export function getConfigSummary(): Record<string, any> {
     nodeEnv: config.nodeEnv,
     jwtSecret: config.jwtSecret ? '[REDACTED]' : '[NOT SET]',
     databaseUrl: config.databaseUrl ? '[REDACTED]' : '[NOT SET]',
+    mongodbAuthUrl: config.mongodbAuthUrl ? '[REDACTED]' : '[NOT SET]',
     logLevel: config.logLevel,
     appName: config.appName,
     version: config.version,
