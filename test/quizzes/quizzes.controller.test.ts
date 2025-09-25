@@ -47,11 +47,17 @@ const mockQuizValidator = QuizValidator as jest.Mocked<typeof QuizValidator>;
 describe('quizzesController', () => {
   let mockReq: Partial<Request>;
   let mockRes: Partial<Response>;
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     mockReq = testUtils.createMockRequest();
     mockRes = testUtils.createMockResponse();
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   describe('createQuiz', () => {
@@ -157,6 +163,7 @@ describe('quizzesController', () => {
 
       await quizzesController.createQuiz(mockReq as Request, mockRes as Response);
 
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error creating quiz:', expect.any(Error));
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
         ok: false,
