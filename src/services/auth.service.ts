@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
+import { AuthMongoDBService } from './auth-mongodb.service';
 
 /**
  * Authentication service for password hashing and JWT operations
@@ -62,5 +63,25 @@ export class AuthService {
       role: user.role,
       createdAt: user.created_at
     };
+  }
+
+  /**
+   * Sync user to MongoDB (dual-write functionality)
+   * This is part of Phase 2 of the migration plan
+   */
+  static async syncUserToMongoDB(pgUser: {
+    id: number;
+    email: string;
+    password_hash: string;
+    name: string;
+    role: string;
+    created_at: Date;
+  }): Promise<void> {
+    try {
+      await AuthMongoDBService.syncUserFromPostgres(pgUser);
+      console.log(`User ${pgUser.email} synced to MongoDB successfully`);
+    } catch (error) {
+      console.error(`Failed to sync user ${pgUser.email} to MongoDB:`, error);
+    }
   }
 }

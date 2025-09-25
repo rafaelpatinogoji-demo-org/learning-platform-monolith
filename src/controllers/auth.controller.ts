@@ -88,12 +88,14 @@ export const authController = {
 
       // Create user
       const result = await db.query(
-        'INSERT INTO users (email, password_hash, name, role) VALUES ($1, $2, $3, $4) RETURNING id, email, name, role, created_at',
+        'INSERT INTO users (email, password_hash, name, role) VALUES ($1, $2, $3, $4) RETURNING id, email, password_hash, name, role, created_at',
         [email.toLowerCase(), hashedPassword, name, userRole]
       );
 
       const user = result.rows[0];
       const profile = AuthService.createUserProfile(user);
+      
+      await AuthService.syncUserToMongoDB(user);
       
       // Generate JWT token for immediate login
       const token = AuthService.generateToken({
