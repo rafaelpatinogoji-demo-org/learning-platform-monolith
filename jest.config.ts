@@ -29,11 +29,15 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   
-  // Only collect coverage from auth-related files
   collectCoverageFrom: [
     'src/middleware/auth.middleware.ts',
     'src/utils/jwt-utils.ts',
-    'src/utils/password-hasher.ts'
+    'src/utils/password-hasher.ts',
+    'src/services/enrollments.service.ts',
+    'src/services/progress.service.ts',
+    'src/controllers/enrollments.controller.ts',
+    'src/controllers/progress.controller.ts',
+    'src/utils/validation.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
@@ -61,6 +65,39 @@ const config: Config = {
     // Password hasher should have high coverage
     'src/utils/password-hasher.ts': {
       branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    // Enrollments service should have high coverage
+    'src/services/enrollments.service.ts': {
+      branches: 85,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    // Progress service should have high coverage
+    'src/services/progress.service.ts': {
+      branches: 85,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    },
+    'src/controllers/enrollments.controller.ts': {
+      branches: 80,
+      functions: 85,
+      lines: 85,
+      statements: 85
+    },
+    'src/controllers/progress.controller.ts': {
+      branches: 80,
+      functions: 85,
+      lines: 85,
+      statements: 85
+    },
+    // Validation utilities should have high coverage
+    'src/utils/validation.ts': {
+      branches: 85,
       functions: 90,
       lines: 90,
       statements: 90
