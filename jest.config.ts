@@ -29,11 +29,14 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   
-  // Only collect coverage from auth-related files
+  // Only collect coverage from auth-related files and Progress module
   collectCoverageFrom: [
     'src/middleware/auth.middleware.ts',
     'src/utils/jwt-utils.ts',
-    'src/utils/password-hasher.ts'
+    'src/utils/password-hasher.ts',
+    'src/controllers/progress.controller.ts',
+    'src/services/progress.service.ts',
+    'src/utils/validation.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
@@ -64,6 +67,27 @@ const config: Config = {
       functions: 90,
       lines: 90,
       statements: 90
+    },
+    // Progress controller should have high coverage
+    'src/controllers/progress.controller.ts': {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85
+    },
+    // Progress service should have high coverage
+    'src/services/progress.service.ts': {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85
+    },
+    // Validation utilities should have high coverage
+    'src/utils/validation.ts': {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
     }
   },
   
