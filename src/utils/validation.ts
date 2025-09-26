@@ -709,3 +709,104 @@ export class CertificateValidator {
     };
   }
 }
+
+export class UserValidator {
+  /**
+   * Validate user creation data
+   */
+  static validateCreateUser(data: any): ValidationResult {
+    const errors: ValidationError[] = [];
+
+    // Email validation
+    if (!data.email || typeof data.email !== 'string') {
+      errors.push({ field: 'email', message: 'Email is required and must be a string' });
+    } else if (!this.isValidEmail(data.email)) {
+      errors.push({ field: 'email', message: 'Email must be a valid email address' });
+    }
+
+    // Password validation
+    if (!data.password || typeof data.password !== 'string') {
+      errors.push({ field: 'password', message: 'Password is required and must be a string' });
+    } else if (data.password.length < 6) {
+      errors.push({ field: 'password', message: 'Password must be at least 6 characters long' });
+    }
+
+    // Name validation
+    if (data.name === undefined || data.name === null) {
+      errors.push({ field: 'name', message: 'Name is required and must be a string' });
+    } else if (typeof data.name !== 'string') {
+      errors.push({ field: 'name', message: 'Name is required and must be a string' });
+    } else if (data.name.trim().length === 0) {
+      errors.push({ field: 'name', message: 'Name cannot be empty' });
+    } else if (data.name.length > 255) {
+      errors.push({ field: 'name', message: 'Name must be 255 characters or less' });
+    }
+
+    if (data.role !== undefined) {
+      if (!['admin', 'instructor', 'student'].includes(data.role)) {
+        errors.push({ field: 'role', message: 'Role must be one of: admin, instructor, student' });
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Validate user update data
+   */
+  static validateUpdateUser(data: any): ValidationResult {
+    const errors: ValidationError[] = [];
+
+    // Email validation (optional for updates)
+    if (data.email !== undefined) {
+      if (typeof data.email !== 'string') {
+        errors.push({ field: 'email', message: 'Email must be a string' });
+      } else if (!this.isValidEmail(data.email)) {
+        errors.push({ field: 'email', message: 'Email must be a valid email address' });
+      }
+    }
+
+    // Password validation (optional for updates)
+    if (data.password !== undefined) {
+      if (typeof data.password !== 'string') {
+        errors.push({ field: 'password', message: 'Password must be a string' });
+      } else if (data.password.length < 6) {
+        errors.push({ field: 'password', message: 'Password must be at least 6 characters long' });
+      }
+    }
+
+    // Name validation (optional for updates)
+    if (data.name !== undefined) {
+      if (typeof data.name !== 'string') {
+        errors.push({ field: 'name', message: 'Name must be a string' });
+      } else if (data.name.trim().length === 0) {
+        errors.push({ field: 'name', message: 'Name cannot be empty' });
+      } else if (data.name.length > 255) {
+        errors.push({ field: 'name', message: 'Name must be 255 characters or less' });
+      }
+    }
+
+    // Role validation (optional for updates, admin only)
+    if (data.role !== undefined) {
+      if (!['admin', 'instructor', 'student'].includes(data.role)) {
+        errors.push({ field: 'role', message: 'Role must be one of: admin, instructor, student' });
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Check if email format is valid
+   */
+  private static isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+}
