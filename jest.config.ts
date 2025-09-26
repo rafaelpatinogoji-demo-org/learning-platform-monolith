@@ -33,7 +33,10 @@ const config: Config = {
   collectCoverageFrom: [
     'src/middleware/auth.middleware.ts',
     'src/utils/jwt-utils.ts',
-    'src/utils/password-hasher.ts'
+    'src/utils/password-hasher.ts',
+    'src/services/courses.service.ts',
+    'src/services/lessons.service.ts',
+    'src/utils/validation.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
