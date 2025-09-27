@@ -1,6 +1,8 @@
 # LearnLite Backend
 
-A minimal Express.js backend for the LearnLite learning platform, built with TypeScript.
+**Created by Rafael Patino Goji**
+
+A minimal Express.js backend for the LearnLite learning platform, built with TypeScript. This is a sample application for demos and educational purposes.
 
 ## Quick Start
 
