@@ -477,7 +477,7 @@ export class EnrollmentValidator {
     const errors: ValidationError[] = [];
 
     // Course ID validation
-    if (!data.courseId) {
+    if (data.courseId === undefined || data.courseId === null) {
       errors.push({ field: 'courseId', message: 'Course ID is required' });
     } else if (!Number.isInteger(data.courseId) || data.courseId <= 0) {
       errors.push({ field: 'courseId', message: 'Course ID must be a positive integer' });
@@ -623,8 +623,20 @@ export class CertificateValidator {
   static validateIssueCertificate(data: any): ValidationResult {
     const errors: ValidationError[] = [];
 
+    // Handle null or undefined data
+    if (!data || typeof data !== 'object') {
+      errors.push({
+        field: 'data',
+        message: 'Invalid data provided'
+      });
+      return {
+        isValid: false,
+        errors
+      };
+    }
+
     // Validate userId
-    if (!data.userId) {
+    if (data.userId === undefined || data.userId === null) {
       errors.push({
         field: 'userId',
         message: 'User ID is required'
@@ -637,7 +649,7 @@ export class CertificateValidator {
     }
 
     // Validate courseId
-    if (!data.courseId) {
+    if (data.courseId === undefined || data.courseId === null) {
       errors.push({
         field: 'courseId',
         message: 'Course ID is required'
@@ -661,8 +673,20 @@ export class CertificateValidator {
   static validateClaimCertificate(data: any): ValidationResult {
     const errors: ValidationError[] = [];
 
+    // Handle null or undefined data
+    if (!data || typeof data !== 'object') {
+      errors.push({
+        field: 'data',
+        message: 'Invalid data provided'
+      });
+      return {
+        isValid: false,
+        errors
+      };
+    }
+
     // Validate courseId
-    if (!data.courseId) {
+    if (data.courseId === undefined || data.courseId === null) {
       errors.push({
         field: 'courseId',
         message: 'Course ID is required'
