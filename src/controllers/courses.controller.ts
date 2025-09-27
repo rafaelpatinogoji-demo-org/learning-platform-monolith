@@ -27,7 +27,7 @@ export const coursesController = {
         ok: true,
         data: result.courses,
         pagination: result.pagination,
-        version: 'v0.7'
+        version: 'v1.9' // Versión de API actualizada con mejoras en el sistema de gestión de cursos
       });
     } catch (error) {
       console.error(`[${req.requestId}] List courses error:`, error);
@@ -93,7 +93,7 @@ export const coursesController = {
         ok: true,
         message: 'Course created successfully',
         data: course,
-        version: 'v0.7'
+        version: 'v1.9' // Versión de API actualizada con mejoras en el sistema de gestión de cursos
       });
     } catch (error) {
       console.error(`[${req.requestId}] Create course error:`, error);
@@ -184,7 +184,7 @@ export const coursesController = {
       res.json({
         ok: true,
         data: course,
-        version: 'v0.7'
+        version: 'v1.9' // Versión de API actualizada con mejoras en el sistema de gestión de cursos
       });
     } catch (error) {
       console.error(`[${req.requestId}] Get course error:`, error);
@@ -294,7 +294,7 @@ export const coursesController = {
         ok: true,
         message: 'Course updated successfully',
         data: course,
-        version: 'v0.7'
+        version: 'v1.9' // Versión de API actualizada con mejoras en el sistema de gestión de cursos
       });
     } catch (error) {
       console.error(`[${req.requestId}] Update course error:`, error);
@@ -355,7 +355,7 @@ export const coursesController = {
       res.json({
         ok: true,
         message: 'Course deleted successfully',
-        version: 'v0.7'
+        version: 'v1.9' // Versión de API actualizada con mejoras en el sistema de gestión de cursos
       });
     } catch (error) {
       console.error(`[${req.requestId}] Delete course error:`, error);
@@ -431,7 +431,7 @@ export const coursesController = {
         ok: true,
         message: 'Course published successfully',
         data: course,
-        version: 'v0.7'
+        version: 'v1.9' // Versión de API actualizada con mejoras en el sistema de gestión de cursos
       });
     } catch (error) {
       console.error(`[${req.requestId}] Publish course error:`, error);
@@ -507,7 +507,7 @@ export const coursesController = {
         ok: true,
         message: 'Course unpublished successfully',
         data: course,
-        version: 'v0.7'
+        version: 'v1.9' // Versión de API actualizada con mejoras en el sistema de gestión de cursos
       });
     } catch (error) {
       console.error(`[${req.requestId}] Unpublish course error:`, error);
@@ -516,6 +516,84 @@ export const coursesController = {
         error: {
           code: 'INTERNAL_ERROR',
           message: 'Failed to unpublish course',
+          requestId: req.requestId,
+          timestamp: new Date().toISOString()
+        }
+      });
+    }
+  },
+
+  // GET /courses/:id/overview - Get course overview with statistics
+  overview: async (req: Request, res: Response) => {
+    try {
+      const courseId = parseInt(req.params.id);
+      if (isNaN(courseId)) {
+        return res.status(400).json({
+          ok: false,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Course ID must be a valid number',
+            requestId: req.requestId,
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+
+      const overview = await CoursesService.getCourseOverview(courseId);
+      
+      if (!overview) {
+        return res.status(404).json({
+          ok: false,
+          error: {
+            code: 'COURSE_NOT_FOUND',
+            message: 'Course not found',
+            requestId: req.requestId,
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+
+      // Check access permissions
+      if (!overview.published) {
+        if (!req.user) {
+          return res.status(404).json({
+            ok: false,
+            error: {
+              code: 'COURSE_NOT_FOUND',
+              message: 'Course not found',
+              requestId: req.requestId,
+              timestamp: new Date().toISOString()
+            }
+          });
+        }
+
+        // Only instructor (owner) or admin can view unpublished course overview
+        if (req.user.role === 'student' || 
+            (req.user.role === 'instructor' && overview.instructor.id !== req.user.id)) {
+          return res.status(404).json({
+            ok: false,
+            error: {
+              code: 'COURSE_NOT_FOUND',
+              message: 'Course not found',
+              requestId: req.requestId,
+              timestamp: new Date().toISOString()
+            }
+          });
+        }
+      }
+
+      res.json({
+        ok: true,
+        data: overview,
+        version: 'v1.9' // Versión de API actualizada con mejoras en el sistema de gestión de cursos
+      });
+    } catch (error) {
+      console.error(`[${req.requestId}] Get course overview error:`, error);
+      res.status(500).json({
+        ok: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to get course overview',
           requestId: req.requestId,
           timestamp: new Date().toISOString()
         }

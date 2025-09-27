@@ -46,6 +46,28 @@ export interface CourseListResult {
   };
 }
 
+export interface CourseOverview {
+  id: number;
+  title: string;
+  published: boolean;
+  instructor: {
+    id: number;
+    name: string;
+  };
+  totalLessons: number;
+  enrollments: {
+    active: number;
+    completed: number;
+  };
+  averageProgress: number;
+  quizzes: {
+    total: number;
+    totalQuestions: number;
+  };
+  certificatesIssued: number;
+  updatedAt: Date;
+}
+
 export class CoursesService {
   /**
    * Create a new course
@@ -290,5 +312,120 @@ export class CoursesService {
   static async deleteCourse(id: number): Promise<boolean> {
     const result = await db.query('DELETE FROM courses WHERE id = $1', [id]);
     return (result.rowCount ?? 0) > 0;
+  }
+
+  /**
+   * Get comprehensive course overview with statistics
+   */
+  static async getCourseOverview(courseId: number): Promise<CourseOverview | null> {
+    // First get basic course info with instructor
+    const courseQuery = `
+      SELECT 
+        c.id, c.title, c.published, c.instructor_id, c.created_at,
+        u.name as instructor_name
+      FROM courses c
+      LEFT JOIN users u ON c.instructor_id = u.id
+      WHERE c.id = $1
+    `;
+    
+    const courseResult = await db.query(courseQuery, [courseId]);
+    
+    if (courseResult.rows.length === 0) {
+      return null;
+    }
+    
+    const course = courseResult.rows[0];
+    
+    // Get all statistics in parallel for better performance
+    const [
+      lessonsResult,
+      enrollmentsResult,
+      progressResult,
+      quizzesResult,
+      certificatesResult
+    ] = await Promise.all([
+      // Total lessons count
+      db.query(
+        'SELECT COUNT(*) as total FROM lessons WHERE course_id = $1',
+        [courseId]
+      ),
+      
+      // Enrollments by status
+      db.query(`
+        SELECT 
+          COUNT(*) FILTER (WHERE status = 'active') as active,
+          COUNT(*) FILTER (WHERE status = 'completed') as completed
+        FROM enrollments 
+        WHERE course_id = $1
+      `, [courseId]),
+      
+      // Average progress calculation
+      db.query(`
+        SELECT 
+          COALESCE(AVG(
+            CASE 
+              WHEN lesson_count = 0 THEN 0
+              ELSE (completed_lessons::float / lesson_count::float * 100)
+            END
+          ), 0) as average_progress
+        FROM (
+          SELECT 
+            e.id,
+            COUNT(l.id) as lesson_count,
+            COUNT(lp.id) as completed_lessons
+          FROM enrollments e
+          LEFT JOIN lessons l ON l.course_id = e.course_id
+          LEFT JOIN lesson_progress lp ON lp.enrollment_id = e.id AND lp.lesson_id = l.id AND lp.completed_at IS NOT NULL
+          WHERE e.course_id = $1
+          GROUP BY e.id
+        ) progress_stats
+      `, [courseId]),
+      
+      // Quizzes and questions count
+      db.query(`
+        SELECT 
+          COUNT(DISTINCT q.id) as total_quizzes,
+          COUNT(qq.id) as total_questions
+        FROM quizzes q
+        LEFT JOIN quiz_questions qq ON qq.quiz_id = q.id
+        WHERE q.course_id = $1
+      `, [courseId]),
+      
+      // Certificates issued count
+      db.query(`
+        SELECT COUNT(*) as total
+        FROM certificates
+        WHERE course_id = $1
+      `, [courseId])
+    ]);
+    
+    // Extract results with defaults
+    const totalLessons = parseInt(lessonsResult.rows[0]?.total || '0');
+    const enrollments = {
+      active: parseInt(enrollmentsResult.rows[0]?.active || '0'),
+      completed: parseInt(enrollmentsResult.rows[0]?.completed || '0')
+    };
+    const averageProgress = Math.round(parseFloat(progressResult.rows[0]?.average_progress || '0'));
+    const quizzes = {
+      total: parseInt(quizzesResult.rows[0]?.total_quizzes || '0'),
+      totalQuestions: parseInt(quizzesResult.rows[0]?.total_questions || '0')
+    };
+    const certificatesIssued = parseInt(certificatesResult.rows[0]?.total || '0');
+    
+    return {
+      id: course.id,
+      title: course.title,
+      published: course.published,
+      instructor: {
+        id: course.instructor_id,
+        name: course.instructor_name || 'Unknown'
+      },
+      totalLessons,
+      enrollments,
+      averageProgress,
+      quizzes,
+      certificatesIssued,
+      updatedAt: course.created_at
+    };
   }
 }

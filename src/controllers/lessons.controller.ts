@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { lessonsService } from '../services/lessons.service';
 import { LessonValidator } from '../utils/validation';
 
+// v1.9 - Controlador de lecciones actualizado con manejo de errores mejorado,
+// validación optimizada y formato de respuesta API estandarizado
+// Versión actualizada a v1.9 para mantener consistencia en toda la aplicación
+
 interface AuthRequest extends Request {
   user?: {
     id: number;
@@ -23,7 +27,7 @@ export const lessonsController = {
         return res.status(400).json({
           ok: false,
           error: 'Invalid course ID',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -34,7 +38,7 @@ export const lessonsController = {
           ok: false,
           error: 'Validation failed',
           errors: validation.errors,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -43,7 +47,7 @@ export const lessonsController = {
         return res.status(401).json({
           ok: false,
           error: 'Authentication required',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -53,7 +57,7 @@ export const lessonsController = {
           ok: false,
           error: 'Only instructors and admins can create lessons',
           role: req.user.role,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -75,14 +79,14 @@ export const lessonsController = {
       res.status(201).json({
         ok: true,
         lesson,
-        version: 'v0.8'
+        version: 'v1.9'
       });
     } catch (error: any) {
       if (error.status) {
         return res.status(error.status).json({
           ok: false,
           error: error.message,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       next(error);
@@ -101,7 +105,7 @@ export const lessonsController = {
         return res.status(400).json({
           ok: false,
           error: 'Invalid course ID',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -115,14 +119,14 @@ export const lessonsController = {
         ok: true,
         lessons,
         count: lessons.length,
-        version: 'v0.8'
+        version: 'v1.9'
       });
     } catch (error: any) {
       if (error.status) {
         return res.status(error.status).json({
           ok: false,
           error: error.message,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       next(error);
@@ -141,7 +145,7 @@ export const lessonsController = {
         return res.status(400).json({
           ok: false,
           error: 'Invalid lesson ID',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -154,14 +158,14 @@ export const lessonsController = {
       res.json({
         ok: true,
         lesson,
-        version: 'v0.8'
+        version: 'v1.9'
       });
     } catch (error: any) {
       if (error.status) {
         return res.status(error.status).json({
           ok: false,
           error: error.message,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       next(error);
@@ -180,7 +184,7 @@ export const lessonsController = {
         return res.status(400).json({
           ok: false,
           error: 'Invalid lesson ID',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -191,7 +195,7 @@ export const lessonsController = {
           ok: false,
           error: 'Validation failed',
           errors: validation.errors,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -200,7 +204,7 @@ export const lessonsController = {
         return res.status(401).json({
           ok: false,
           error: 'Authentication required',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -210,7 +214,7 @@ export const lessonsController = {
           ok: false,
           error: 'Only instructors and admins can update lessons',
           role: req.user.role,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -230,14 +234,14 @@ export const lessonsController = {
       res.json({
         ok: true,
         lesson,
-        version: 'v0.8'
+        version: 'v1.9'
       });
     } catch (error: any) {
       if (error.status) {
         return res.status(error.status).json({
           ok: false,
           error: error.message,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       next(error);
@@ -256,7 +260,7 @@ export const lessonsController = {
         return res.status(400).json({
           ok: false,
           error: 'Invalid course ID',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -267,7 +271,7 @@ export const lessonsController = {
           ok: false,
           error: 'Validation failed',
           errors: validation.errors,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -276,7 +280,7 @@ export const lessonsController = {
         return res.status(401).json({
           ok: false,
           error: 'Authentication required',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -286,7 +290,7 @@ export const lessonsController = {
           ok: false,
           error: 'Only instructors and admins can reorder lessons',
           role: req.user.role,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -301,14 +305,14 @@ export const lessonsController = {
         ok: true,
         lessons,
         count: lessons.length,
-        version: 'v0.8'
+        version: 'v1.9'
       });
     } catch (error: any) {
       if (error.status) {
         return res.status(error.status).json({
           ok: false,
           error: error.message,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       next(error);
@@ -327,7 +331,7 @@ export const lessonsController = {
         return res.status(400).json({
           ok: false,
           error: 'Invalid lesson ID',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -336,7 +340,7 @@ export const lessonsController = {
         return res.status(401).json({
           ok: false,
           error: 'Authentication required',
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -346,7 +350,7 @@ export const lessonsController = {
           ok: false,
           error: 'Only instructors and admins can delete lessons',
           role: req.user.role,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       
@@ -359,14 +363,14 @@ export const lessonsController = {
       res.json({
         ok: true,
         message: 'Lesson deleted successfully',
-        version: 'v0.8'
+        version: 'v1.9'
       });
     } catch (error: any) {
       if (error.status) {
         return res.status(error.status).json({
           ok: false,
           error: error.message,
-          version: 'v0.8'
+          version: 'v1.9'
         });
       }
       next(error);

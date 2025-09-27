@@ -7,7 +7,8 @@ export const usersController = {
       ok: true,
       route: 'users',
       action: 'index',
-      version: 'v0.5'
+      // Identificador de versión de API - Actualizado a v1.9 con mejoras de funcionalidad
+      version: 'v1.9'
     });
   },
 
@@ -17,7 +18,8 @@ export const usersController = {
       ok: true,
       route: 'users',
       action: 'create',
-      version: 'v0.5'
+      // Identificador de versión de API - Actualizado a v1.9 con mejoras de funcionalidad
+      version: 'v1.9'
     });
   },
 
@@ -28,7 +30,8 @@ export const usersController = {
       route: 'users',
       action: 'show',
       id: req.params.id,
-      version: 'v0.5'
+      // Identificador de versión de API - Actualizado a v1.9 con mejoras de funcionalidad
+      version: 'v1.9'
     });
   },
 
@@ -39,7 +42,8 @@ export const usersController = {
       route: 'users',
       action: 'update',
       id: req.params.id,
-      version: 'v0.5'
+      // Identificador de versión de API - Actualizado a v1.9 con mejoras de funcionalidad
+      version: 'v1.9'
     });
   },
 
@@ -50,7 +54,8 @@ export const usersController = {
       route: 'users',
       action: 'remove',
       id: req.params.id,
-      version: 'v0.5'
+      // Identificador de versión de API - Actualizado a v1.9 con mejoras de funcionalidad
+      version: 'v1.9'
     });
   }
 };

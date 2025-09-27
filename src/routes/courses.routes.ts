@@ -17,6 +17,9 @@ router.get('/', coursesController.index);
 // GET /courses/:id - Get course details (role-based access applied in controller)
 router.get('/:id', coursesController.show);
 
+// GET /courses/:id/overview - Get course overview with statistics (role-based access applied in controller)
+router.get('/:id/overview', authMiddleware.optional, coursesController.overview);
+
 // Protected routes require authentication
 // POST /courses - Create course (instructors and admins only)
 router.post('/', authenticate, requireRole('instructor', 'admin'), coursesController.create);

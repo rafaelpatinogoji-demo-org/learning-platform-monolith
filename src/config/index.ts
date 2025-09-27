@@ -110,7 +110,7 @@ function loadConfig(): AppConfig {
       databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/learnlite_dev',
       logLevel: validateLogLevel(process.env.LOG_LEVEL),
       appName: process.env.APP_NAME || 'learnlite',
-      version: 'v1.2',
+      version: 'v1.9', // Versión actual de la aplicación utilizada para tracking y compatibilidad
       notificationsEnabled,
       notificationsSink
     };

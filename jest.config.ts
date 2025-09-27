@@ -36,7 +36,9 @@ const config: Config = {
     'src/utils/password-hasher.ts',
     'src/services/certificates.service.ts',
     'src/controllers/certificates.controller.ts',
-    'src/utils/validation.ts'
+    'src/utils/validation.ts',
+    'src/services/enrollments.service.ts',
+    'src/services/progress.service.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
