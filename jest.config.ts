@@ -36,6 +36,7 @@ const config: Config = {
     'src/utils/password-hasher.ts',
     'src/services/certificates.service.ts',
     'src/controllers/certificates.controller.ts',
+    'src/controllers/notifications.controller.ts',
     'src/utils/validation.ts',
     'src/services/enrollments.service.ts',
     'src/services/progress.service.ts'
@@ -69,6 +70,12 @@ const config: Config = {
       functions: 90,
       lines: 90,
       statements: 90
+    },
+    'src/controllers/notifications.controller.ts': {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85
     }
   },
   
