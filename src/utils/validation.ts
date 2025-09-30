@@ -709,3 +709,72 @@ export class CertificateValidator {
     };
   }
 }
+export class AuthValidator {
+  /**
+   * Validate user registration data
+   */
+  static validateRegister(data: any): ValidationResult {
+    const errors: ValidationError[] = [];
+
+    // Email validation
+    if (!data.email || typeof data.email !== 'string') {
+      errors.push({ field: 'email', message: 'Email is required and must be a string' });
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.email)) {
+        errors.push({ field: 'email', message: 'Invalid email format' });
+      }
+    }
+
+    // Password validation
+    if (!data.password || typeof data.password !== 'string') {
+      errors.push({ field: 'password', message: 'Password is required and must be a string' });
+    } else if (data.password.length < 6) {
+      errors.push({ field: 'password', message: 'Password must be at least 6 characters long' });
+    }
+
+    // Name validation
+    if (!data.name || typeof data.name !== 'string') {
+      errors.push({ field: 'name', message: 'Name is required and must be a string' });
+    } else if (data.name.trim().length === 0) {
+      errors.push({ field: 'name', message: 'Name cannot be empty' });
+    }
+
+    // Role validation (optional)
+    if (data.role !== undefined && data.role !== null) {
+      if (!['admin', 'instructor', 'student'].includes(data.role)) {
+        errors.push({ 
+          field: 'role', 
+          message: 'Invalid role. Must be admin, instructor, or student' 
+        });
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Validate user login data
+   */
+  static validateLogin(data: any): ValidationResult {
+    const errors: ValidationError[] = [];
+
+    // Email validation
+    if (!data.email || typeof data.email !== 'string') {
+      errors.push({ field: 'email', message: 'Email is required and must be a string' });
+    }
+
+    // Password validation
+    if (!data.password || typeof data.password !== 'string') {
+      errors.push({ field: 'password', message: 'Password is required and must be a string' });
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+}
