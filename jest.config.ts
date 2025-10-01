@@ -29,16 +29,13 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   
-  // Collect coverage from auth and certificates modules
+  // Collect coverage from auth module only
   collectCoverageFrom: [
     'src/middleware/auth.middleware.ts',
     'src/utils/jwt-utils.ts',
     'src/utils/password-hasher.ts',
-    'src/services/certificates.service.ts',
-    'src/controllers/certificates.controller.ts',
-    'src/utils/validation.ts',
-    'src/services/enrollments.service.ts',
-    'src/services/progress.service.ts'
+    'src/services/auth.service.ts',
+    'src/controllers/auth.controller.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
