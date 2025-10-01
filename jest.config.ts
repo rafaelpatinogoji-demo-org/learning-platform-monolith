@@ -13,7 +13,9 @@ const config: Config = {
   // Test file patterns
   testMatch: [
     '<rootDir>/test/**/*.test.ts',
-    '<rootDir>/test/**/*.spec.ts'
+    '<rootDir>/test/**/*.spec.ts',
+    '<rootDir>/src/**/__tests__/**/*.test.ts',
+    '<rootDir>/src/**/__tests__/**/*.spec.ts'
   ],
   
   // Module file extensions
