@@ -58,6 +58,14 @@ describe('QuizzesService', () => {
 
       await expect(QuizzesService.createQuiz(10, 'Test Quiz', 1)).rejects.toThrow('FORBIDDEN');
     });
+
+    it('should throw FORBIDDEN when course does not exist', async () => {
+      mockDb.query
+        .mockResolvedValueOnce({ rows: [{ role: 'student' }], rowCount: 1 } as any)
+        .mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+
+      await expect(QuizzesService.createQuiz(999, 'Test Quiz', 1)).rejects.toThrow('FORBIDDEN');
+    });
   });
 
   describe('listQuizzesForCourse', () => {
@@ -255,6 +263,27 @@ describe('QuizzesService', () => {
       expect(result.prompt).toBe('Updated Question');
     });
 
+    it('should throw NOT_FOUND when quiz does not exist', async () => {
+      mockDb.query.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+
+      await expect(
+        QuizzesService.updateQuestion(999, 1, { prompt: 'Test' }, 1)
+      ).rejects.toThrow('NOT_FOUND');
+    });
+
+    it('should throw FORBIDDEN when user is not owner or admin', async () => {
+      mockDb.query
+        .mockResolvedValueOnce({
+          rows: [{ id: 1, course_id: 10, instructor_id: 2 }],
+          rowCount: 1
+        } as any)
+        .mockResolvedValueOnce({ rows: [{ role: 'student' }], rowCount: 1 } as any);
+
+      await expect(
+        QuizzesService.updateQuestion(1, 1, { prompt: 'Test' }, 1)
+      ).rejects.toThrow('FORBIDDEN');
+    });
+
     it('should throw NOT_FOUND when question does not exist', async () => {
       mockDb.query
         .mockResolvedValueOnce({
@@ -267,6 +296,64 @@ describe('QuizzesService', () => {
       await expect(
         QuizzesService.updateQuestion(1, 999, { prompt: 'Test' }, 1)
       ).rejects.toThrow('NOT_FOUND');
+    });
+
+    it('should update only choices when provided', async () => {
+      const mockQuestion = {
+        id: 1,
+        quiz_id: 1,
+        prompt: 'Question',
+        choices: ['X', 'Y', 'Z'],
+        correct_index: 0,
+        created_at: new Date()
+      };
+
+      mockDb.query
+        .mockResolvedValueOnce({
+          rows: [{ id: 1, course_id: 10, instructor_id: 1 }],
+          rowCount: 1
+        } as any)
+        .mockResolvedValueOnce({ rows: [{ role: 'instructor' }], rowCount: 1 } as any)
+        .mockResolvedValueOnce({
+          rows: [{ id: 1, quiz_id: 1, prompt: 'Question', choices: ['A', 'B'], correct_index: 0 }],
+          rowCount: 1
+        } as any)
+        .mockResolvedValueOnce({ rows: [mockQuestion], rowCount: 1 } as any);
+
+      const result = await QuizzesService.updateQuestion(1, 1, { choices: ['X', 'Y', 'Z'] }, 1);
+
+      expect(result.choices).toEqual(['X', 'Y', 'Z']);
+      expect(mockDb.query).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE quiz_questions'),
+        expect.arrayContaining([JSON.stringify(['X', 'Y', 'Z'])])
+      );
+    });
+
+    it('should update only correct_index when provided', async () => {
+      const mockQuestion = {
+        id: 1,
+        quiz_id: 1,
+        prompt: 'Question',
+        choices: ['A', 'B', 'C'],
+        correct_index: 2,
+        created_at: new Date()
+      };
+
+      mockDb.query
+        .mockResolvedValueOnce({
+          rows: [{ id: 1, course_id: 10, instructor_id: 1 }],
+          rowCount: 1
+        } as any)
+        .mockResolvedValueOnce({ rows: [{ role: 'instructor' }], rowCount: 1 } as any)
+        .mockResolvedValueOnce({
+          rows: [{ id: 1, quiz_id: 1, prompt: 'Question', choices: ['A', 'B', 'C'], correct_index: 0 }],
+          rowCount: 1
+        } as any)
+        .mockResolvedValueOnce({ rows: [mockQuestion], rowCount: 1 } as any);
+
+      const result = await QuizzesService.updateQuestion(1, 1, { correct_index: 2 }, 1);
+
+      expect(result.correct_index).toBe(2);
     });
 
     it('should return unchanged question when no updates provided', async () => {
@@ -304,6 +391,12 @@ describe('QuizzesService', () => {
         .mockResolvedValueOnce({ rowCount: 1 } as any);
 
       await expect(QuizzesService.deleteQuestion(1, 1, 1)).resolves.toBeUndefined();
+    });
+
+    it('should throw NOT_FOUND when quiz does not exist', async () => {
+      mockDb.query.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+
+      await expect(QuizzesService.deleteQuestion(999, 1, 1)).rejects.toThrow('NOT_FOUND');
     });
 
     it('should throw NOT_FOUND when question does not exist', async () => {
