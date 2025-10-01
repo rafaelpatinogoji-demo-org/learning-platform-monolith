@@ -13,7 +13,8 @@ const config: Config = {
   // Test file patterns
   testMatch: [
     '<rootDir>/test/**/*.test.ts',
-    '<rootDir>/test/**/*.spec.ts'
+    '<rootDir>/test/**/*.spec.ts',
+    '<rootDir>/src/controllers/__tests__/**/*.test.ts'
   ],
   
   // Module file extensions
@@ -36,6 +37,7 @@ const config: Config = {
     'src/utils/password-hasher.ts',
     'src/services/certificates.service.ts',
     'src/controllers/certificates.controller.ts',
+    'src/controllers/users.controller.ts',
     'src/utils/validation.ts',
     'src/services/enrollments.service.ts',
     'src/services/progress.service.ts'
