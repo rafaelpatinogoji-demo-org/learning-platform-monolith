@@ -733,3 +733,58 @@ export class CertificateValidator {
     };
   }
 }
+export class UserValidator {
+  static validateRoleUpdate(data: any): ValidationResult {
+    const errors: ValidationError[] = [];
+
+    if (!data.role) {
+      errors.push({ field: 'role', message: 'Role is required' });
+    } else if (!['admin', 'instructor', 'student'].includes(data.role)) {
+      errors.push({ 
+        field: 'role', 
+        message: 'Role must be one of: admin, instructor, student' 
+      });
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  static validateListParams(query: any): { 
+    page: number; 
+    limit: number; 
+    role?: string;
+    search?: string;
+  } {
+    let page = 1;
+    let limit = 10;
+
+    if (query.page) {
+      const parsedPage = parseInt(query.page);
+      if (!isNaN(parsedPage) && parsedPage > 0) {
+        page = parsedPage;
+      }
+    }
+
+    if (query.limit) {
+      const parsedLimit = parseInt(query.limit);
+      if (!isNaN(parsedLimit) && parsedLimit > 0 && parsedLimit <= 100) {
+        limit = parsedLimit;
+      }
+    }
+
+    const result: any = { page, limit };
+
+    if (query.role && ['admin', 'instructor', 'student'].includes(query.role)) {
+      result.role = query.role;
+    }
+
+    if (query.search && typeof query.search === 'string' && query.search.trim()) {
+      result.search = query.search.trim();
+    }
+
+    return result;
+  }
+}
