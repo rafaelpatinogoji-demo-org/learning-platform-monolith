@@ -7,10 +7,6 @@ In this workflow you are supposed to summon using the terminal, new devin sessio
 
 Use the terminal to run one task at the time until we finish all of the ones we have saved on the folder.
 
-Use my Devin API KEY 
-
-apk_user_ZW1haWx8NjhjMDVlYTQzMWFiNTAwNjk0YTg3Mzg3X29yZy0zMDQ2YjlmMDIxZDc0ZTM4OGMzY2RlMjEwMTdiMzdiNzo5MTVjMDM0OTE0ZjQ0NTg3OGJlOGY0MWFlMWZlODkyNQ==
-
 To create new devin sessions using the md files that we have created
 
 and spin up devin tasks for each one of them
