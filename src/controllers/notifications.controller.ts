@@ -2,12 +2,12 @@ import { Request, Response } from 'express';
 import { getWorker, isWorkerEnabled } from '../modules/notifications/worker';
 import { config } from '../config';
 
-class NotificationsController {
+export const notificationsController = {
   /**
    * GET /api/notifications/health
    * Returns the health status of the notifications worker
    */
-  async getHealth(req: Request, res: Response): Promise<void> {
+  getHealth: async (req: Request, res: Response): Promise<void> => {
     try {
       if (!isWorkerEnabled()) {
         res.json({
@@ -36,6 +36,4 @@ class NotificationsController {
       });
     }
   }
-}
-
-export const notificationsController = new NotificationsController();
+};
