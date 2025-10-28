@@ -38,7 +38,9 @@ const config: Config = {
     'src/controllers/certificates.controller.ts',
     'src/utils/validation.ts',
     'src/services/enrollments.service.ts',
-    'src/services/progress.service.ts'
+    'src/services/progress.service.ts',
+    'src/services/courses.service.ts',
+    'src/services/lessons.service.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
