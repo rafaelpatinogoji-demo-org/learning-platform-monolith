@@ -13,7 +13,9 @@ const config: Config = {
   // Test file patterns
   testMatch: [
     '<rootDir>/test/**/*.test.ts',
-    '<rootDir>/test/**/*.spec.ts'
+    '<rootDir>/test/**/*.spec.ts',
+    '<rootDir>/src/**/__tests__/**/*.test.ts',
+    '<rootDir>/src/**/__tests__/**/*.spec.ts'
   ],
   
   // Module file extensions
@@ -32,6 +34,8 @@ const config: Config = {
   // Collect coverage from auth and certificates modules
   collectCoverageFrom: [
     'src/middleware/auth.middleware.ts',
+    'src/services/auth.service.ts',
+    'src/controllers/auth.controller.ts',
     'src/utils/jwt-utils.ts',
     'src/utils/password-hasher.ts',
     'src/services/certificates.service.ts',
@@ -69,11 +73,25 @@ const config: Config = {
       functions: 90,
       lines: 90,
       statements: 90
+    },
+    // Auth service should have high coverage
+    'src/services/auth.service.ts': {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85
+    },
+    // Auth controller should have high coverage
+    'src/controllers/auth.controller.ts': {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
     }
   },
   
   // Setup files
-  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
+  setupFilesAfterEnv: [],
   
   // Clear mocks between tests
   clearMocks: true,
