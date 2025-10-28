@@ -38,7 +38,10 @@ const config: Config = {
     'src/controllers/certificates.controller.ts',
     'src/utils/validation.ts',
     'src/services/enrollments.service.ts',
-    'src/services/progress.service.ts'
+    'src/services/progress.service.ts',
+    'src/modules/notifications/publisher.ts',
+    'src/modules/notifications/worker.ts',
+    'src/controllers/notifications.controller.ts'
   ],
   
   // Coverage thresholds - focused on auth components only
@@ -69,6 +72,20 @@ const config: Config = {
       functions: 90,
       lines: 90,
       statements: 90
+    },
+    // Notifications publisher should have high coverage
+    'src/modules/notifications/publisher.ts': {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    },
+    // Notifications worker should have high coverage
+    'src/modules/notifications/worker.ts': {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
     }
   },
   
